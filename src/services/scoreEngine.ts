@@ -1,7 +1,4 @@
 import type {
-  ExpressionData,
-  PoseData,
-  GestureData,
   TimelineEntry,
   CommunicationScores,
   SessionSummary,

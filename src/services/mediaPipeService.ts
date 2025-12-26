@@ -1,4 +1,5 @@
-import { Holistic, Results } from '@mediapipe/holistic';
+import { Holistic } from '@mediapipe/holistic';
+import type { Results } from '@mediapipe/holistic';
 import type { PoseData, GestureData } from '../types/analysis';
 
 let holistic: Holistic | null = null;
