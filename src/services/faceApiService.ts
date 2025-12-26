@@ -1,7 +1,7 @@
 import * as faceapi from 'face-api.js';
 import type { ExpressionData } from '../types/analysis';
 
-const MODEL_URL = '/models';
+const MODEL_URL = `${import.meta.env.BASE_URL}models`;
 
 let modelsLoaded = false;
 
