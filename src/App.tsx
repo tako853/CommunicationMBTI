@@ -39,6 +39,10 @@ function App() {
         expressions: faceAnalysis.currentExpressions,
         pose: mediaPipe.currentPose,
         gesture: mediaPipe.currentGesture,
+        headPose: mediaPipe.currentHeadPose,
+        gaze: mediaPipe.currentGaze,
+        handShape: mediaPipe.currentHandShape,
+        bodyMovement: mediaPipe.currentBodyMovement,
       };
 
       timelineRef.current.push(entry);
@@ -130,6 +134,10 @@ function App() {
                 currentExpressions={faceAnalysis.currentExpressions}
                 currentPose={mediaPipe.currentPose}
                 currentGesture={mediaPipe.currentGesture}
+                currentHeadPose={mediaPipe.currentHeadPose}
+                currentGaze={mediaPipe.currentGaze}
+                currentHandShape={mediaPipe.currentHandShape}
+                currentBodyMovement={mediaPipe.currentBodyMovement}
               />
             </div>
           </div>

@@ -1,12 +1,23 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Results } from '@mediapipe/holistic';
-import type { PoseData, GestureData } from '../types/analysis';
+import type {
+  PoseData,
+  GestureData,
+  HeadPoseData,
+  GazeData,
+  HandShapeData,
+  BodyMovementData,
+} from '../types/analysis';
 import {
   initMediaPipe,
   setOnResultsCallback,
   processFrame,
   extractPoseData,
   extractGestureData,
+  extractHeadPoseData,
+  extractGazeData,
+  extractHandShapeData,
+  extractBodyMovementData,
 } from '../services/mediaPipeService';
 
 interface UseMediaPipeReturn {
@@ -15,6 +26,10 @@ interface UseMediaPipeReturn {
   error: string | null;
   currentPose: PoseData | null;
   currentGesture: GestureData | null;
+  currentHeadPose: HeadPoseData | null;
+  currentGaze: GazeData | null;
+  currentHandShape: HandShapeData | null;
+  currentBodyMovement: BodyMovementData | null;
   analyze: (video: HTMLVideoElement) => Promise<void>;
 }
 
@@ -23,9 +38,11 @@ export function useMediaPipe(): UseMediaPipeReturn {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPose, setCurrentPose] = useState<PoseData | null>(null);
-  const [currentGesture, setCurrentGesture] = useState<GestureData | null>(
-    null
-  );
+  const [currentGesture, setCurrentGesture] = useState<GestureData | null>(null);
+  const [currentHeadPose, setCurrentHeadPose] = useState<HeadPoseData | null>(null);
+  const [currentGaze, setCurrentGaze] = useState<GazeData | null>(null);
+  const [currentHandShape, setCurrentHandShape] = useState<HandShapeData | null>(null);
+  const [currentBodyMovement, setCurrentBodyMovement] = useState<BodyMovementData | null>(null);
   const isInitializing = useRef(false);
 
   useEffect(() => {
@@ -37,10 +54,12 @@ export function useMediaPipe(): UseMediaPipeReturn {
         await initMediaPipe();
 
         setOnResultsCallback((results: Results) => {
-          const pose = extractPoseData(results);
-          const gesture = extractGestureData(results);
-          setCurrentPose(pose);
-          setCurrentGesture(gesture);
+          setCurrentPose(extractPoseData(results));
+          setCurrentGesture(extractGestureData(results));
+          setCurrentHeadPose(extractHeadPoseData(results));
+          setCurrentGaze(extractGazeData(results));
+          setCurrentHandShape(extractHandShapeData(results));
+          setCurrentBodyMovement(extractBodyMovementData(results));
         });
 
         setIsReady(true);
@@ -70,6 +89,10 @@ export function useMediaPipe(): UseMediaPipeReturn {
     error,
     currentPose,
     currentGesture,
+    currentHeadPose,
+    currentGaze,
+    currentHandShape,
+    currentBodyMovement,
     analyze,
   };
 }
