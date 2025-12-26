@@ -17,28 +17,27 @@ let lastBodyCenter: { x: number; y: number } | null = null;
 let lastPitchValues: number[] = [];
 let onResultsCallback: ((results: Results) => void) | null = null;
 
-export function initMediaPipe(): Promise<void> {
-  return new Promise((resolve) => {
-    holistic = new Holistic({
-      locateFile: (file) =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
-    });
-
-    holistic.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    holistic.onResults((results) => {
-      if (onResultsCallback) {
-        onResultsCallback(results);
-      }
-    });
-
-    resolve();
+export async function initMediaPipe(): Promise<void> {
+  holistic = new Holistic({
+    locateFile: (file) =>
+      `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
   });
+
+  holistic.setOptions({
+    modelComplexity: 1,
+    smoothLandmarks: true,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5,
+  });
+
+  holistic.onResults((results) => {
+    if (onResultsCallback) {
+      onResultsCallback(results);
+    }
+  });
+
+  // モデルの初期化を待つ
+  await holistic.initialize();
 }
 
 export function setOnResultsCallback(callback: (results: Results) => void) {
