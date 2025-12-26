@@ -128,6 +128,8 @@ function App() {
               <ScoreDisplay
                 scores={scores}
                 currentExpressions={faceAnalysis.currentExpressions}
+                currentPose={mediaPipe.currentPose}
+                currentGesture={mediaPipe.currentGesture}
               />
             </div>
           </div>
