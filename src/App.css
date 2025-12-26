@@ -37,6 +37,9 @@ h1 {
 .video-section {
   flex: 1;
   min-width: 300px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
 }
 
 .webcam-container {
@@ -92,6 +95,8 @@ button {
   flex: 1;
   min-width: 320px;
   max-width: 400px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 
 .score-display {
