@@ -31,6 +31,7 @@ h1 {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .video-section {
@@ -89,7 +90,8 @@ button {
 
 .score-section {
   flex: 1;
-  min-width: 280px;
+  min-width: 320px;
+  max-width: 400px;
 }
 
 .score-display {
@@ -107,86 +109,105 @@ button {
   background: #e3f2fd;
   padding: 10px 15px;
   border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 16px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  min-height: 20px;
 }
 
 .scores-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .score-bar {
   background: white;
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px 12px;
 }
 
 .score-label {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 500;
+  font-size: 14px;
+}
+
+.score-label span:last-child {
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  min-width: 50px;
+  text-align: right;
 }
 
 .score-track {
-  height: 12px;
+  height: 10px;
   background: #e0e0e0;
-  border-radius: 6px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .score-fill {
   height: 100%;
   background: linear-gradient(90deg, #4CAF50, #8BC34A);
-  border-radius: 6px;
+  border-radius: 5px;
   transition: width 0.3s ease;
 }
 
 .data-section {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 16px;
+  padding: 12px;
   background: white;
   border-radius: 8px;
+  min-height: 100px;
 }
 
 .data-section h4 {
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
   color: #555;
-  font-size: 14px;
+  font-size: 13px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .detail-item {
   display: flex;
   justify-content: space-between;
-  padding: 6px 10px;
+  align-items: center;
+  padding: 5px 8px;
   background: #f9f9f9;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 12px;
+  min-height: 24px;
 }
 
 .detail-label {
   color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .detail-value {
   font-weight: 600;
   color: #333;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  min-width: 55px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 .no-data {
   color: #999;
-  font-size: 13px;
+  font-size: 12px;
   font-style: italic;
-  padding: 10px;
+  padding: 30px 10px;
   text-align: center;
+  min-height: 24px;
 }
