@@ -17,3 +17,6 @@
 npm install
 npm run dev
 ```
+## ブランチ戦略
+このリポジトリはGitHub Flowとします。
+mainには直接pushせず、featureブランチを切って、mainへのPull Requestを出してください！
