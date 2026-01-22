@@ -1,12 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <main className="max-w-2xl text-center">
-        <h1 className="text-4xl font-bold mb-4">
-          コミュニケーションタイプ診断
-        </h1>
+        <Image
+          src="/types/logo.jpg"
+          alt="コミュニケーションMBTI"
+          width={500}
+          height={120}
+          className="mx-auto mb-4"
+          priority
+        />
         <p className="text-lg text-gray-600 mb-8">
           カメラと音声を使って、あなたのコミュニケーションスタイルを分析します。
           4つの軸から16タイプに分類し、強みと注意点をフィードバックします。

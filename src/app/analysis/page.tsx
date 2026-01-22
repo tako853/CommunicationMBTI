@@ -222,7 +222,13 @@ export default function AnalysisPage() {
 
   return (
     <div className="min-h-screen p-4">
-      <h1 className="text-2xl font-bold text-center mb-4">AIと会話して分析</h1>
+      <div className="flex justify-center mb-4">
+        <img
+          src="/types/logo.jpg"
+          alt="コミュニケーションMBTI"
+          style={{ height: '60px', width: 'auto' }}
+        />
+      </div>
 
       {isLoading && (
         <div className="text-center p-8">
