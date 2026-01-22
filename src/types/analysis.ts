@@ -153,3 +153,11 @@ export interface CommunicationTypeInfo {
   cautions: string[];
   imagePath: string;
 }
+
+// 結果ページに渡すデータ（sessionStorage用）
+export interface AnalysisResultData {
+  type: CommunicationType;
+  axisScores: CommunicationAxisScores;
+  detailScores: CommunicationScores;
+  personalizedComment?: string;
+}

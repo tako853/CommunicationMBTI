@@ -1,16 +1,65 @@
 'use client';
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ResultDisplay } from '@/components/ResultDisplay';
 import { COMMUNICATION_TYPES } from '@/data/communicationTypes';
-import type { CommunicationType, CommunicationAxisScores } from '@/types/analysis';
+import { generatePersonalizedComment } from '@/services/personalizedCommentService';
+import type { CommunicationType, CommunicationAxisScores, CommunicationScores, AnalysisResultData } from '@/types/analysis';
+
+// デフォルトの軸スコア
+const defaultAxisScores: CommunicationAxisScores = {
+  assertiveness: 50,
+  listening: 50,
+  nonverbalExpression: 50,
+  nonverbalReading: 50,
+};
+
+// デフォルトの詳細スコア
+const defaultDetailScores: CommunicationScores = {
+  expressiveness: 50,
+  gestureActivity: 50,
+  posturalOpenness: 50,
+  eyeContact: 50,
+  nodding: 50,
+};
 
 export default function ResultPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
-
   const type = params.type as string;
+
+  const [axisScores, setAxisScores] = useState<CommunicationAxisScores>(defaultAxisScores);
+  const [detailScores, setDetailScores] = useState<CommunicationScores>(defaultDetailScores);
+  const [personalizedComment, setPersonalizedComment] = useState<string | null>(null);
+  const [isLoadingComment, setIsLoadingComment] = useState(false);
+
+  // sessionStorageからデータを取得
+  useEffect(() => {
+    const stored = sessionStorage.getItem('analysisResult');
+    if (stored) {
+      try {
+        const data: AnalysisResultData = JSON.parse(stored);
+        setAxisScores(data.axisScores);
+        setDetailScores(data.detailScores);
+
+        // パーソナライズコメントを生成
+        setIsLoadingComment(true);
+        generatePersonalizedComment(data.type, data.axisScores, data.detailScores)
+          .then((comment) => {
+            setPersonalizedComment(comment);
+          })
+          .catch((error) => {
+            console.error('Failed to generate personalized comment:', error);
+          })
+          .finally(() => {
+            setIsLoadingComment(false);
+          });
+      } catch (e) {
+        console.error('Failed to parse analysis result:', e);
+      }
+    }
+  }, []);
 
   // タイプが有効かチェック
   if (!COMMUNICATION_TYPES[type as CommunicationType]) {
@@ -28,17 +77,15 @@ export default function ResultPage() {
     );
   }
 
-  // クエリパラメータからスコアを取得（なければデフォルト50）
-  const scores: CommunicationAxisScores = {
-    assertiveness: parseInt(searchParams.get('a') || '50', 10),
-    listening: parseInt(searchParams.get('l') || '50', 10),
-    nonverbalExpression: parseInt(searchParams.get('n') || '50', 10),
-    nonverbalReading: parseInt(searchParams.get('r') || '50', 10),
-  };
-
   return (
     <div className="min-h-screen p-4">
-      <ResultDisplay type={type as CommunicationType} scores={scores} />
+      <ResultDisplay
+        type={type as CommunicationType}
+        scores={axisScores}
+        detailScores={detailScores}
+        personalizedComment={personalizedComment}
+        isLoadingComment={isLoadingComment}
+      />
 
       <div className="max-w-xl mx-auto mt-8 flex gap-4 justify-center">
         <Link

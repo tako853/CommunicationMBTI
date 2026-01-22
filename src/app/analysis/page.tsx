@@ -13,7 +13,7 @@ import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { calculateAllScores } from '@/services/scoreEngine';
 import { analyzeSpeech } from '@/services/speechAnalysisService';
 import { determineType } from '@/data/communicationTypes';
-import type { TimelineEntry, CommunicationScores, CommunicationAxisScores } from '@/types/analysis';
+import type { TimelineEntry, CommunicationScores, CommunicationAxisScores, AnalysisResultData } from '@/types/analysis';
 
 type ConversationState = 'idle' | 'ai_speaking' | 'user_speaking' | 'processing';
 
@@ -213,15 +213,16 @@ export default function AnalysisPage() {
       // タイプを判定
       const type = determineType(axisScores);
 
-      // 結果ページに遷移
-      const params = new URLSearchParams({
-        a: axisScores.assertiveness.toString(),
-        l: axisScores.listening.toString(),
-        n: axisScores.nonverbalExpression.toString(),
-        r: axisScores.nonverbalReading.toString(),
-      });
+      // sessionStorageに結果データを保存
+      const resultData: AnalysisResultData = {
+        type,
+        axisScores,
+        detailScores: finalScores,
+      };
+      sessionStorage.setItem('analysisResult', JSON.stringify(resultData));
 
-      router.push(`/result/${type}?${params.toString()}`);
+      // 結果ページに遷移
+      router.push(`/result/${type}`);
     } finally {
       setIsProcessing(false);
     }

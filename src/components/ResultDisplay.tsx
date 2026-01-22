@@ -1,9 +1,12 @@
-import { CommunicationType, CommunicationAxisScores } from '../types/analysis';
+import { CommunicationType, CommunicationAxisScores, CommunicationScores } from '../types/analysis';
 import { getTypeInfo } from '../data/communicationTypes';
 
 interface ResultDisplayProps {
   type: CommunicationType;
   scores: CommunicationAxisScores;
+  detailScores?: CommunicationScores;
+  personalizedComment?: string | null;
+  isLoadingComment?: boolean;
 }
 
 const axisLabels = {
@@ -13,7 +16,13 @@ const axisLabels = {
   nonverbalReading: { high: 'Perceptive (察知型)', low: 'Tell-me (明示待ち型)', name: '非言語を読み取る力' },
 };
 
-export const ResultDisplay = ({ type, scores }: ResultDisplayProps) => {
+export const ResultDisplay = ({
+  type,
+  scores,
+  detailScores,
+  personalizedComment,
+  isLoadingComment,
+}: ResultDisplayProps) => {
   const typeInfo = getTypeInfo(type);
 
   return (
@@ -40,6 +49,18 @@ export const ResultDisplay = ({ type, scores }: ResultDisplayProps) => {
 
       {/* 説明 */}
       <p style={styles.description}>{typeInfo.description}</p>
+
+      {/* パーソナライズコメント */}
+      {(personalizedComment || isLoadingComment) && (
+        <div style={styles.personalizedSection}>
+          <h3 style={styles.sectionTitle}>あなたへのコメント</h3>
+          {isLoadingComment ? (
+            <div style={styles.loadingComment}>コメントを生成中...</div>
+          ) : (
+            <p style={styles.personalizedComment}>{personalizedComment}</p>
+          )}
+        </div>
+      )}
 
       {/* 4軸のスコア */}
       <div style={styles.axesSection}>
@@ -140,6 +161,24 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
     marginBottom: '24px',
     color: '#333',
+  },
+  personalizedSection: {
+    marginBottom: '24px',
+    padding: '16px',
+    backgroundColor: '#f0f9ff',
+    borderRadius: '8px',
+    border: '1px solid #bae6fd',
+  },
+  personalizedComment: {
+    fontSize: '15px',
+    lineHeight: '1.7',
+    color: '#0369a1',
+    margin: 0,
+  },
+  loadingComment: {
+    fontSize: '14px',
+    color: '#64748b',
+    textAlign: 'center',
   },
   axesSection: {
     marginBottom: '24px',
