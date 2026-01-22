@@ -5,6 +5,11 @@ interface SpeechAnalysisResult {
   assertiveness: number; // 軸1: 伝える力 (0-100)
   listening: number;     // 軸2: 聞く力 (0-100)
   nonverbalReading: number; // 軸4: 非言語を読み取る力 (0-100)
+  reasons: {
+    assertiveness: string;
+    listening: string;
+    nonverbalReading: string;
+  };
 }
 
 // 分析用のシステムプロンプト
@@ -28,8 +33,17 @@ const SYSTEM_PROMPT = `あなたは会話分析の専門家です。与えられ
 - 低い(0-30): 相手の非言語的なサインへの言及がない、明示的な情報のみで判断
 
 ## 回答形式
-必ず以下のJSON形式のみで回答してください。説明文は不要です。
-{"assertiveness": 数値, "listening": 数値, "nonverbalReading": 数値}`;
+必ず以下のJSON形式のみで回答してください。各軸のスコアと、そのスコアをつけた具体的な理由（会話内容から読み取れた特徴）を含めてください。
+{
+  "assertiveness": 数値,
+  "listening": 数値,
+  "nonverbalReading": 数値,
+  "reasons": {
+    "assertiveness": "理由（20文字程度で簡潔に）",
+    "listening": "理由（20文字程度で簡潔に）",
+    "nonverbalReading": "理由（20文字程度で簡潔に）"
+  }
+}`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -78,7 +92,7 @@ ${transcript}
           },
         ],
         temperature: 0.3,
-        max_tokens: 100,
+        max_tokens: 300,
       }),
     });
 
@@ -112,6 +126,11 @@ ${transcript}
         assertiveness: 50,
         listening: 50,
         nonverbalReading: 50,
+        reasons: {
+          assertiveness: '分析できませんでした',
+          listening: '分析できませんでした',
+          nonverbalReading: '分析できませんでした',
+        },
       };
     }
 
@@ -119,6 +138,15 @@ ${transcript}
     result.assertiveness = Math.max(0, Math.min(100, result.assertiveness));
     result.listening = Math.max(0, Math.min(100, result.listening));
     result.nonverbalReading = Math.max(0, Math.min(100, result.nonverbalReading));
+
+    // reasonsがない場合のフォールバック
+    if (!result.reasons) {
+      result.reasons = {
+        assertiveness: '',
+        listening: '',
+        nonverbalReading: '',
+      };
+    }
 
     return NextResponse.json(result);
   } catch (error) {

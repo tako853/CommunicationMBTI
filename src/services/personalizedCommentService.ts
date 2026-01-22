@@ -1,16 +1,17 @@
-import type { CommunicationType, CommunicationAxisScores, CommunicationScores } from '@/types/analysis';
+import type { CommunicationType, CommunicationAxisScores, CommunicationScores, AxisReasons } from '@/types/analysis';
 
 export async function generatePersonalizedComment(
   type: CommunicationType,
   axisScores: CommunicationAxisScores,
-  detailScores: CommunicationScores
+  detailScores: CommunicationScores,
+  axisReasons?: AxisReasons
 ): Promise<string> {
   const response = await fetch('/api/personalized-comment', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ type, axisScores, detailScores }),
+    body: JSON.stringify({ type, axisScores, detailScores, axisReasons }),
   });
 
   if (!response.ok) {

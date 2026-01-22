@@ -155,10 +155,19 @@ export interface CommunicationTypeInfo {
   color: string; // タイプ固有のテーマカラー（1色）
 }
 
+// 各軸の評価理由
+export interface AxisReasons {
+  assertiveness: string;    // 軸1の評価理由
+  listening: string;        // 軸2の評価理由
+  nonverbalExpression: string; // 軸3の評価理由
+  nonverbalReading: string; // 軸4の評価理由
+}
+
 // 結果ページに渡すデータ（sessionStorage用）
 export interface AnalysisResultData {
   type: CommunicationType;
   axisScores: CommunicationAxisScores;
   detailScores: CommunicationScores;
+  axisReasons?: AxisReasons;  // 各軸の評価理由
   personalizedComment?: string;
 }

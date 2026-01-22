@@ -112,12 +112,15 @@ export function extractGestureData(results: Results): GestureData | null {
   let leftHandMovement = 0;
   let rightHandMovement = 0;
 
+  // ジェスチャー感度係数（大きいほど敏感）
+  const GESTURE_SENSITIVITY = 100;
+
   if (results.leftHandLandmarks && results.leftHandLandmarks.length > 0) {
     const wrist = results.leftHandLandmarks[0];
     if (lastLeftHandPos) {
       const dx = wrist.x - lastLeftHandPos.x;
       const dy = wrist.y - lastLeftHandPos.y;
-      leftHandMovement = Math.min(Math.sqrt(dx * dx + dy * dy) * 10, 1);
+      leftHandMovement = Math.min(Math.sqrt(dx * dx + dy * dy) * GESTURE_SENSITIVITY, 1);
     }
     lastLeftHandPos = { x: wrist.x, y: wrist.y };
   } else {
@@ -129,7 +132,7 @@ export function extractGestureData(results: Results): GestureData | null {
     if (lastRightHandPos) {
       const dx = wrist.x - lastRightHandPos.x;
       const dy = wrist.y - lastRightHandPos.y;
-      rightHandMovement = Math.min(Math.sqrt(dx * dx + dy * dy) * 10, 1);
+      rightHandMovement = Math.min(Math.sqrt(dx * dx + dy * dy) * GESTURE_SENSITIVITY, 1);
     }
     lastRightHandPos = { x: wrist.x, y: wrist.y };
   } else {

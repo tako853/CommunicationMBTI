@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { CommunicationType, CommunicationAxisScores, CommunicationScores } from '@/types/analysis';
+import type { CommunicationType, CommunicationAxisScores, CommunicationScores, AxisReasons } from '@/types/analysis';
 
 // パーソナライズコメント生成用のシステムプロンプト
 const SYSTEM_PROMPT = `あなたはコミュニケーション診断の専門家です。ユーザーの診断結果に基づいて、その人独自のパーソナライズされた一言コメントを生成してください。
@@ -37,15 +37,20 @@ const SYSTEM_PROMPT = `あなたはコミュニケーション診断の専門家
 - 「主張型のAタイプで、さらにジェスチャーも活発なので、プレゼンテーションが得意そうですね」
 - 「察知型のPですが、頷きが少なめなので、もう少し相槌を意識すると相手に安心感を与えられるかも」
 
+### 各軸の評価理由について
+評価理由が提供されている場合は、その具体的な行動や特徴を踏まえてコメントを生成してください。
+例：「発話量が多く積極的」という理由があれば、それを活かしたアドバイスができます。
+
 ## 回答形式
 コメントのテキストのみを返してください。JSON形式は不要です。`;
 
 export async function POST(request: NextRequest) {
   try {
-    const { type, axisScores, detailScores } = await request.json() as {
+    const { type, axisScores, detailScores, axisReasons } = await request.json() as {
       type: CommunicationType;
       axisScores: CommunicationAxisScores;
       detailScores: CommunicationScores;
+      axisReasons?: AxisReasons;
     };
 
     const apiKey = process.env.OPENAI_API_KEY;
@@ -78,6 +83,12 @@ MBTIタイプ: ${type}
 - 聞く力 (listening): ${axisScores.listening}
 - 非言語を伝える力 (nonverbalExpression): ${axisScores.nonverbalExpression}
 - 非言語を読み取る力 (nonverbalReading): ${axisScores.nonverbalReading}
+
+各軸の評価理由:
+- 伝える力の理由: ${axisReasons?.assertiveness || '（理由なし）'}
+- 聞く力の理由: ${axisReasons?.listening || '（理由なし）'}
+- 非言語を伝える力の理由: ${axisReasons?.nonverbalExpression || '（映像分析による評価）'}
+- 非言語を読み取る力の理由: ${axisReasons?.nonverbalReading || '（理由なし）'}
 
 詳細スコア:
 - 表情の豊かさ (expressiveness): ${detailScores.expressiveness}

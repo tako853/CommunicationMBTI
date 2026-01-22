@@ -51,7 +51,7 @@ export default function ResultPage() {
 
         // パーソナライズコメントを生成
         setIsLoadingComment(true);
-        generatePersonalizedComment(data.type, data.axisScores, data.detailScores)
+        generatePersonalizedComment(data.type, data.axisScores, data.detailScores, data.axisReasons)
           .then((comment) => {
             setPersonalizedComment(comment);
           })

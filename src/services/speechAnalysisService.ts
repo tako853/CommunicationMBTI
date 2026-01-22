@@ -1,9 +1,16 @@
 // GPT分析APIを呼び出すサービス
 
+export interface SpeechAnalysisReasons {
+  assertiveness: string;
+  listening: string;
+  nonverbalReading: string;
+}
+
 export interface SpeechAnalysisResult {
   assertiveness: number;    // 軸1: 伝える力 (0-100)
   listening: number;        // 軸2: 聞く力 (0-100)
   nonverbalReading: number; // 軸4: 非言語を読み取る力 (0-100)
+  reasons: SpeechAnalysisReasons;
 }
 
 export async function analyzeSpeech(

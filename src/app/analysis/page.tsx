@@ -199,6 +199,11 @@ export default function AnalysisPage() {
         assertiveness: 50,
         listening: 50,
         nonverbalReading: 50,
+        reasons: {
+          assertiveness: '',
+          listening: '',
+          nonverbalReading: '',
+        },
       };
 
       const userTranscript = conversation.getUserTranscript();
@@ -228,6 +233,12 @@ export default function AnalysisPage() {
         type,
         axisScores,
         detailScores: finalScores,
+        axisReasons: {
+          assertiveness: speechScores.reasons.assertiveness,
+          listening: speechScores.reasons.listening,
+          nonverbalExpression: '', // 映像分析のため理由は自動生成
+          nonverbalReading: speechScores.reasons.nonverbalReading,
+        },
       };
       sessionStorage.setItem('analysisResult', JSON.stringify(resultData));
 
@@ -263,7 +274,7 @@ export default function AnalysisPage() {
       {isReady && (
         <div className="max-w-5xl mx-auto space-y-4">
           {/* メインエリア: 会話ログ + カメラ（右横） */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-stretch">
             {/* 会話ログ（メイン） */}
             <div className="flex-1 rounded-lg shadow-sm p-4" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}20` }}>
               <div className="flex items-center justify-between mb-3">
@@ -296,8 +307,9 @@ export default function AnalysisPage() {
               />
             </div>
 
-            {/* カメラ（右横） */}
-            <div className="flex-shrink-0 w-48 md:w-56">
+            {/* カメラ + ボタン（右横） */}
+            <div className="flex-shrink-0 w-48 md:w-56 flex flex-col">
+              {/* カメラ */}
               <div className="rounded-lg overflow-hidden shadow-lg relative" style={{ border: `2px solid ${theme.secondary}60` }}>
                 <WebcamCapture
                   onFrame={handleFrame}
@@ -311,51 +323,51 @@ export default function AnalysisPage() {
                   </div>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* 操作ボタン */}
-          <div className="flex gap-2 justify-center flex-wrap">
-            {!isAnalyzing ? (
-              <button
-                onClick={handleStartConversation}
-                disabled={isProcessing}
-                className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
-                style={{ backgroundColor: theme.secondary }}
-              >
-                会話を開始
-              </button>
-            ) : (
-              <>
-                {conversationState === 'user_speaking' && (
+              {/* 操作ボタン（カメラの下） */}
+              <div className="flex-1 flex flex-col justify-end mt-3 gap-2">
+                {!isAnalyzing ? (
                   <button
-                    onClick={handleSendMessage}
-                    className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+                    onClick={handleStartConversation}
+                    disabled={isProcessing}
+                    className="w-full text-white px-4 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 text-sm"
                     style={{ backgroundColor: theme.secondary }}
                   >
-                    発言を送信
+                    会話を開始
+                  </button>
+                ) : (
+                  <>
+                    {conversationState === 'user_speaking' && (
+                      <button
+                        onClick={handleSendMessage}
+                        className="w-full text-white px-4 py-2 rounded-lg transition-opacity hover:opacity-90 text-sm"
+                        style={{ backgroundColor: theme.secondary }}
+                      >
+                        発言を送信
+                      </button>
+                    )}
+                    <button
+                      onClick={handleEndConversation}
+                      className="w-full text-white px-4 py-2 rounded-lg transition-opacity hover:opacity-90 text-sm"
+                      style={{ backgroundColor: theme.brown }}
+                    >
+                      会話を終了
+                    </button>
+                  </>
+                )}
+
+                {conversation.messages.length > 0 && !isAnalyzing && (
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={isProcessing}
+                    className="w-full text-white px-4 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 text-sm"
+                    style={{ backgroundColor: theme.primary }}
+                  >
+                    {isProcessing ? '分析中...' : '結果を見る'}
                   </button>
                 )}
-                <button
-                  onClick={handleEndConversation}
-                  className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: theme.brown }}
-                >
-                  会話を終了
-                </button>
-              </>
-            )}
-
-            {conversation.messages.length > 0 && !isAnalyzing && (
-              <button
-                onClick={handleAnalyze}
-                disabled={isProcessing}
-                className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
-                style={{ backgroundColor: theme.primary }}
-              >
-                {isProcessing ? '分析中...' : '結果を見る'}
-              </button>
-            )}
+              </div>
+            </div>
           </div>
 
           {/* スコア表示 */}
