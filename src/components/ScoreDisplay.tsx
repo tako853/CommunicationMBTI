@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import type {
   CommunicationScores,
   ExpressionData,
@@ -31,28 +34,13 @@ const emotionLabels: Record<string, string> = {
   surprised: '驚き',
 };
 
-function ScoreBar({ label, value }: { label: string; value: number }) {
+function MiniScoreBar({ value, color }: { value: number; color: string }) {
   return (
-    <div className="score-bar">
-      <div className="score-label">
-        <span>{label}</span>
-        <span>{typeof value === 'number' ? value.toFixed(0) : value}</span>
-      </div>
-      <div className="score-track">
-        <div
-          className="score-fill"
-          style={{ width: `${Math.min(value, 100)}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function DataSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="data-section">
-      <h4>{title}</h4>
-      {children}
+    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden flex-1">
+      <div
+        className="h-full rounded-full transition-all duration-300"
+        style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}
+      />
     </div>
   );
 }
@@ -77,193 +65,221 @@ export function ScoreDisplay({
   currentHandShape,
   currentBodyMovement,
 }: ScoreDisplayProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const dominantEmotion = currentExpressions
     ? getDominantExpression(currentExpressions)
     : null;
 
+  const scoreItems = [
+    { label: '表情', value: scores.expressiveness, color: '#f59e0b' },
+    { label: 'ジェスチャー', value: scores.gestureActivity, color: '#10b981' },
+    { label: '姿勢', value: scores.posturalOpenness, color: '#3b82f6' },
+    { label: '視線', value: scores.eyeContact, color: '#8b5cf6' },
+    { label: '頷き', value: scores.nodding, color: '#ec4899' },
+  ];
+
   return (
-    <div className="score-display">
-      <h3>Communication Scores</h3>
-
-      <div className="scores-container">
-        <ScoreBar label="表現力" value={scores.expressiveness} />
-        <ScoreBar label="ジェスチャー" value={scores.gestureActivity} />
-        <ScoreBar label="姿勢開放性" value={scores.posturalOpenness} />
-      </div>
-
-      <DataSection title="表情 (face-api.js)">
-        {currentExpressions ? (
-          <>
-            <div className="current-emotion">
-              支配的表情: <strong>{emotionLabels[dominantEmotion!]}</strong>
-            </div>
-            <div className="detail-grid">
-              {Object.entries(currentExpressions).map(([key, value]) => (
-                <div key={key} className="detail-item">
-                  <span className="detail-label">{emotionLabels[key]}</span>
-                  <span className="detail-value">{(value * 100).toFixed(1)}%</span>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      {/* コンパクトヘッダー（常に表示） */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-gray-700">リアルタイムスコア</span>
+          {/* ミニスコアバー表示 */}
+          <div className="hidden sm:flex items-center gap-2">
+            {scoreItems.map((item) => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <span className="text-xs text-gray-400 w-12">{item.label}</span>
+                <div className="w-16">
+                  <MiniScoreBar value={item.value} color={item.color} />
                 </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="no-data">顔が検出されていません</div>
-        )}
-      </DataSection>
-
-      <DataSection title="顔の向き (MediaPipe)">
-        {currentHeadPose ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">上下 (Pitch)</span>
-              <span className="detail-value">{currentHeadPose.pitch.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">左右 (Yaw)</span>
-              <span className="detail-value">{currentHeadPose.yaw.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">傾き (Roll)</span>
-              <span className="detail-value">{currentHeadPose.roll.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">頷き検出</span>
-              <span className="detail-value">{currentHeadPose.isNodding ? 'Yes' : 'No'}</span>
-            </div>
-          </div>
-        ) : (
-          <div className="no-data">顔が検出されていません</div>
-        )}
-      </DataSection>
-
-      <DataSection title="視線 (MediaPipe)">
-        {currentGaze ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">カメラ注視</span>
-              <span className="detail-value">{currentGaze.lookingAtCamera ? 'Yes' : 'No'}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">視線X</span>
-              <span className="detail-value">{currentGaze.gazeDirection.x.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">視線Y</span>
-              <span className="detail-value">{currentGaze.gazeDirection.y.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">目の開き(左)</span>
-              <span className="detail-value">{(currentGaze.eyeOpenness.left * 100).toFixed(0)}%</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">目の開き(右)</span>
-              <span className="detail-value">{(currentGaze.eyeOpenness.right * 100).toFixed(0)}%</span>
-            </div>
-          </div>
-        ) : (
-          <div className="no-data">視線が検出されていません</div>
-        )}
-      </DataSection>
-
-      <DataSection title="手の形状 (MediaPipe)">
-        {currentHandShape && (currentHandShape.left || currentHandShape.right) ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">左手</span>
-              <span className="detail-value">{getHandShapeLabel(currentHandShape.left)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">右手</span>
-              <span className="detail-value">{getHandShapeLabel(currentHandShape.right)}</span>
-            </div>
-            {currentHandShape.left && (
-              <div className="detail-item">
-                <span className="detail-label">左手指数</span>
-                <span className="detail-value">{currentHandShape.left.fingerCount}本</span>
+                <span className="text-xs font-medium w-8" style={{ color: item.color }}>
+                  {item.value}
+                </span>
               </div>
-            )}
-            {currentHandShape.right && (
-              <div className="detail-item">
-                <span className="detail-label">右手指数</span>
-                <span className="detail-value">{currentHandShape.right.fingerCount}本</span>
+            ))}
+          </div>
+        </div>
+        <svg
+          className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* 展開時の詳細表示 */}
+      {isExpanded && (
+        <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
+          {/* スコアバー（大きく表示） */}
+          <div className="grid grid-cols-5 gap-3">
+            {scoreItems.map((item) => (
+              <div key={item.label} className="text-center">
+                <div
+                  className="text-2xl font-bold mb-1"
+                  style={{ color: item.color }}
+                >
+                  {item.value}
+                </div>
+                <div className="text-xs text-gray-500 mb-2">{item.label}</div>
+                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${Math.min(item.value, 100)}%`, backgroundColor: item.color }}
+                  />
+                </div>
               </div>
-            )}
+            ))}
           </div>
-        ) : (
-          <div className="no-data">手が検出されていません</div>
-        )}
-      </DataSection>
 
-      <DataSection title="姿勢 (MediaPipe)">
-        {currentPose ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">肩の開き</span>
-              <span className="detail-value">{(currentPose.shoulderOpenness * 100).toFixed(1)}%</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">前傾/後傾</span>
-              <span className="detail-value">{currentPose.leanAngle.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">安定性</span>
-              <span className="detail-value">{(currentPose.stability * 100).toFixed(1)}%</span>
-            </div>
-          </div>
-        ) : (
-          <div className="no-data">姿勢が検出されていません</div>
-        )}
-      </DataSection>
+          {/* 詳細データ（折りたたみ可能なセクション） */}
+          <details className="group">
+            <summary className="text-sm font-medium text-gray-600 cursor-pointer hover:text-gray-800 flex items-center gap-2">
+              <svg className="w-4 h-4 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              詳細データを見る
+            </summary>
 
-      <DataSection title="体の動き (MediaPipe)">
-        {currentBodyMovement ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">左腕上げ</span>
-              <span className="detail-value">{(currentBodyMovement.armPosition.leftArmRaised * 100).toFixed(0)}%</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">右腕上げ</span>
-              <span className="detail-value">{(currentBodyMovement.armPosition.rightArmRaised * 100).toFixed(0)}%</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">左右傾き</span>
-              <span className="detail-value">{currentBodyMovement.bodyLean.lateral.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">前後傾き</span>
-              <span className="detail-value">{currentBodyMovement.bodyLean.forward.toFixed(2)}</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">体の揺れ</span>
-              <span className="detail-value">{(currentBodyMovement.bodySway * 100).toFixed(0)}%</span>
-            </div>
-          </div>
-        ) : (
-          <div className="no-data">体が検出されていません</div>
-        )}
-      </DataSection>
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {/* 表情 */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                  表情
+                </h4>
+                {currentExpressions ? (
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-gray-800">
+                      {emotionLabels[dominantEmotion!]}
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {Object.entries(currentExpressions).map(([key, value]) => (
+                        <span
+                          key={key}
+                          className="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-600"
+                        >
+                          {emotionLabels[key]}: {(value * 100).toFixed(0)}%
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
 
-      <DataSection title="ジェスチャー (MediaPipe)">
-        {currentGesture ? (
-          <div className="detail-grid">
-            <div className="detail-item">
-              <span className="detail-label">左手の動き</span>
-              <span className="detail-value">{(currentGesture.leftHandMovement * 100).toFixed(1)}%</span>
+              {/* 顔の向き */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                  顔の向き
+                </h4>
+                {currentHeadPose ? (
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-gray-500">上下:</span>
+                    <span className="text-right">{currentHeadPose.pitch.toFixed(2)}</span>
+                    <span className="text-gray-500">左右:</span>
+                    <span className="text-right">{currentHeadPose.yaw.toFixed(2)}</span>
+                    <span className="text-gray-500">傾き:</span>
+                    <span className="text-right">{currentHeadPose.roll.toFixed(2)}</span>
+                    <span className="text-gray-500">頷き:</span>
+                    <span className={`text-right font-medium ${currentHeadPose.isNodding ? 'text-green-600' : 'text-gray-400'}`}>
+                      {currentHeadPose.isNodding ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
+
+              {/* 視線 */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full" />
+                  視線
+                </h4>
+                {currentGaze ? (
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-gray-500">カメラ注視:</span>
+                    <span className={`text-right font-medium ${currentGaze.lookingAtCamera ? 'text-green-600' : 'text-gray-400'}`}>
+                      {currentGaze.lookingAtCamera ? 'Yes' : 'No'}
+                    </span>
+                    <span className="text-gray-500">目の開き(左):</span>
+                    <span className="text-right">{(currentGaze.eyeOpenness.left * 100).toFixed(0)}%</span>
+                    <span className="text-gray-500">目の開き(右):</span>
+                    <span className="text-right">{(currentGaze.eyeOpenness.right * 100).toFixed(0)}%</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
+
+              {/* 手の形状 */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full" />
+                  手の形状
+                </h4>
+                {currentHandShape && (currentHandShape.left || currentHandShape.right) ? (
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-gray-500">左手:</span>
+                    <span className="text-right">{getHandShapeLabel(currentHandShape.left)}</span>
+                    <span className="text-gray-500">右手:</span>
+                    <span className="text-right">{getHandShapeLabel(currentHandShape.right)}</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
+
+              {/* 姿勢 */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-cyan-500 rounded-full" />
+                  姿勢
+                </h4>
+                {currentPose ? (
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-gray-500">肩の開き:</span>
+                    <span className="text-right">{(currentPose.shoulderOpenness * 100).toFixed(0)}%</span>
+                    <span className="text-gray-500">前傾/後傾:</span>
+                    <span className="text-right">{currentPose.leanAngle.toFixed(2)}</span>
+                    <span className="text-gray-500">安定性:</span>
+                    <span className="text-right">{(currentPose.stability * 100).toFixed(0)}%</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
+
+              {/* ジェスチャー */}
+              <div className="bg-white rounded-lg p-3 border border-gray-100">
+                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                  <span className="w-2 h-2 bg-pink-500 rounded-full" />
+                  ジェスチャー
+                </h4>
+                {currentGesture ? (
+                  <div className="grid grid-cols-2 gap-1 text-xs">
+                    <span className="text-gray-500">左手の動き:</span>
+                    <span className="text-right">{(currentGesture.leftHandMovement * 100).toFixed(0)}%</span>
+                    <span className="text-gray-500">右手の動き:</span>
+                    <span className="text-right">{(currentGesture.rightHandMovement * 100).toFixed(0)}%</span>
+                    <span className="text-gray-500">頻度:</span>
+                    <span className="text-right">{(currentGesture.gestureFrequency * 100).toFixed(0)}%</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-gray-400">検出なし</span>
+                )}
+              </div>
             </div>
-            <div className="detail-item">
-              <span className="detail-label">右手の動き</span>
-              <span className="detail-value">{(currentGesture.rightHandMovement * 100).toFixed(1)}%</span>
-            </div>
-            <div className="detail-item">
-              <span className="detail-label">頻度</span>
-              <span className="detail-value">{(currentGesture.gestureFrequency * 100).toFixed(1)}%</span>
-            </div>
-          </div>
-        ) : (
-          <div className="no-data">手が検出されていません</div>
-        )}
-      </DataSection>
+          </details>
+        </div>
+      )}
     </div>
   );
 }

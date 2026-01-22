@@ -29,68 +29,66 @@ export function ConversationLog({
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading, isSpeaking, isUserSpeaking, isProcessing]);
 
   return (
     <div
       ref={scrollRef}
-      style={{
-        height: '300px',
-        overflowY: 'auto',
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '16px',
-        backgroundColor: '#f9fafb',
-      }}
+      className="h-[320px] overflow-y-auto bg-gradient-to-b from-gray-50 to-white rounded-xl border border-gray-200 p-4"
     >
       {messages.length === 0 && !isLoading && !isSpeaking ? (
-        <div style={{ color: '#9ca3af', textAlign: 'center', marginTop: '100px' }}>
-          会話を開始すると、ここにログが表示されます
+        <div className="h-full flex flex-col items-center justify-center text-gray-400">
+          <svg className="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <p className="text-sm">会話を開始すると、ここにログが表示されます</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="space-y-4">
           {messages.map((msg, index) => (
             <div
               key={index}
-              style={{
-                display: 'flex',
-                justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
-              }}
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              <div
-                style={{
-                  maxWidth: '80%',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  backgroundColor: msg.role === 'user' ? '#3b82f6' : '#ffffff',
-                  color: msg.role === 'user' ? '#ffffff' : '#1f2937',
-                  border: msg.role === 'assistant' ? '1px solid #e5e7eb' : 'none',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <div style={{ fontSize: '10px', color: msg.role === 'user' ? '#bfdbfe' : '#9ca3af', marginBottom: '4px' }}>
-                  {msg.role === 'user' ? 'あなた' : 'AI'}
+              <div className={`flex items-end gap-2 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                {/* アバター */}
+                <div
+                  className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    msg.role === 'user'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gradient-to-br from-indigo-400 to-purple-500 text-white'
+                  }`}
+                >
+                  {msg.role === 'user' ? 'You' : 'AI'}
                 </div>
-                <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
-                  {msg.content}
+
+                {/* メッセージバブル */}
+                <div
+                  className={`px-4 py-2.5 rounded-2xl shadow-sm ${
+                    msg.role === 'user'
+                      ? 'bg-blue-500 text-white rounded-br-md'
+                      : 'bg-white border border-gray-100 text-gray-800 rounded-bl-md'
+                  }`}
+                >
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                 </div>
               </div>
             </div>
           ))}
 
-          {/* ローディング表示 */}
+          {/* ローディング表示（考え中） */}
           {isLoading && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <div
-                style={{
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                }}
-              >
-                <div style={{ color: '#9ca3af', fontSize: '14px' }}>
-                  考え中...
+            <div className="flex justify-start">
+              <div className="flex items-end gap-2">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-xs font-bold text-white">
+                  AI
+                </div>
+                <div className="bg-white border border-gray-100 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -98,66 +96,53 @@ export function ConversationLog({
 
           {/* 音声再生中表示 */}
           {isSpeaking && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <div
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: '#fef3c7',
-                  fontSize: '12px',
-                  color: '#92400e',
-                }}
-              >
-                🔊 AIが話しています...
+            <div className="flex justify-start">
+              <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-2">
+                <div className="flex items-center gap-1">
+                  <span className="w-1 h-3 bg-amber-500 rounded-full animate-pulse" />
+                  <span className="w-1 h-4 bg-amber-500 rounded-full animate-pulse" style={{ animationDelay: '75ms' }} />
+                  <span className="w-1 h-2 bg-amber-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1 h-5 bg-amber-500 rounded-full animate-pulse" style={{ animationDelay: '225ms' }} />
+                  <span className="w-1 h-3 bg-amber-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-xs font-medium text-amber-700">AIが話しています</span>
               </div>
             </div>
           )}
 
           {/* ユーザー発話中表示 */}
           {isUserSpeaking && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <div
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: '#dbeafe',
-                  fontSize: '12px',
-                  color: '#1e40af',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: isRecording ? '#ef4444' : '#9ca3af',
-                    animation: isRecording ? 'pulse 1.5s infinite' : 'none',
-                  }}
-                />
-                🎤 {hasSpeechStarted ? '話し終わると自動送信...' : 'お話しください'}
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full px-4 py-2">
+                {isRecording && (
+                  <div className="relative">
+                    <div className="w-3 h-3 bg-red-500 rounded-full" />
+                    <div className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <span className="w-1 h-2 bg-blue-500 rounded-full animate-pulse" />
+                  <span className="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '75ms' }} />
+                  <span className="w-1 h-3 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1 h-5 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '225ms' }} />
+                  <span className="w-1 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-xs font-medium text-blue-700">
+                  {hasSpeechStarted ? '話し終わると送信' : 'お話しください'}
+                </span>
               </div>
             </div>
           )}
 
           {/* 文字起こし中表示 */}
           {isProcessing && (
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <div
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  backgroundColor: '#e5e7eb',
-                  fontSize: '12px',
-                  color: '#4b5563',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                ⏳ 文字起こし中...
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-4 py-2">
+                <svg className="w-4 h-4 text-gray-500 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                <span className="text-xs font-medium text-gray-600">文字起こし中...</span>
               </div>
             </div>
           )}
