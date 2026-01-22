@@ -152,6 +152,7 @@ export interface CommunicationTypeInfo {
   strengths: string[];
   cautions: string[];
   imagePath: string;
+  color: string; // タイプ固有のテーマカラー（1色）
 }
 
 // 結果ページに渡すデータ（sessionStorage用）

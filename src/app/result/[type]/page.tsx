@@ -4,9 +4,15 @@ import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ResultDisplay } from '@/components/ResultDisplay';
-import { COMMUNICATION_TYPES } from '@/data/communicationTypes';
+import { COMMUNICATION_TYPES, getTypeInfo } from '@/data/communicationTypes';
 import { generatePersonalizedComment } from '@/services/personalizedCommentService';
 import type { CommunicationType, CommunicationAxisScores, CommunicationScores, AnalysisResultData } from '@/types/analysis';
+
+// 共通のテーマカラー（タイプ固有でないもの）
+const baseTheme = {
+  brown: '#7d6456',        // ブラウン（テキスト）
+  secondary: '#63a4a6',    // ティールグリーン（フォールバック用）
+};
 
 // デフォルトの軸スコア
 const defaultAxisScores: CommunicationAxisScores = {
@@ -65,17 +71,22 @@ export default function ResultPage() {
   if (!COMMUNICATION_TYPES[type as CommunicationType]) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-8">
-        <h1 className="text-2xl font-bold mb-4">タイプが見つかりません</h1>
-        <p className="text-gray-600 mb-8">指定されたタイプ「{type}」は存在しません。</p>
+        <h1 className="text-2xl font-bold mb-4" style={{ color: baseTheme.brown }}>タイプが見つかりません</h1>
+        <p className="mb-8" style={{ color: `${baseTheme.brown}99` }}>指定されたタイプ「{type}」は存在しません。</p>
         <Link
           href="/"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+          style={{ backgroundColor: baseTheme.secondary }}
         >
           トップに戻る
         </Link>
       </div>
     );
   }
+
+  // タイプ固有のカラーを取得
+  const typeInfo = getTypeInfo(type as CommunicationType);
+  const typeColor = typeInfo.color;
 
   return (
     <div className="min-h-screen p-4">
@@ -90,13 +101,15 @@ export default function ResultPage() {
       <div className="max-w-xl mx-auto mt-8 flex gap-4 justify-center">
         <Link
           href="/analysis"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+          style={{ backgroundColor: typeColor }}
         >
           もう一度診断する
         </Link>
         <Link
           href="/"
-          className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300"
+          className="px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+          style={{ backgroundColor: `${baseTheme.brown}20`, color: baseTheme.brown }}
         >
           トップに戻る
         </Link>

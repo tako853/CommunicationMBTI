@@ -15,6 +15,16 @@ import { analyzeSpeech } from '@/services/speechAnalysisService';
 import { determineType } from '@/data/communicationTypes';
 import type { TimelineEntry, CommunicationScores, CommunicationAxisScores, AnalysisResultData } from '@/types/analysis';
 
+// テーマカラー
+const theme = {
+  primary: '#e24f29',      // オレンジレッド（アクセント）
+  secondary: '#63a4a6',    // ティールグリーン（サブカラー）
+  brown: '#7d6456',        // ブラウン（テキスト）
+  primaryLight: '#fef2ef', // プライマリの薄い背景
+  secondaryLight: '#f0f7f7', // セカンダリの薄い背景
+  brownLight: '#f7f5f4',   // ブラウンの薄い背景
+};
+
 type ConversationState = 'idle' | 'ai_speaking' | 'user_speaking' | 'processing';
 
 export default function AnalysisPage() {
@@ -240,12 +250,12 @@ export default function AnalysisPage() {
 
       {isLoading && (
         <div className="text-center p-8">
-          <div className="text-lg">モデルを読み込み中...</div>
+          <div className="text-lg" style={{ color: theme.brown }}>モデルを読み込み中...</div>
         </div>
       )}
 
       {error && (
-        <div className="text-center p-4 bg-red-100 text-red-700 rounded mb-4">
+        <div className="text-center p-4 rounded mb-4" style={{ backgroundColor: theme.primaryLight, color: theme.primary }}>
           エラー: {error}
         </div>
       )}
@@ -255,23 +265,23 @@ export default function AnalysisPage() {
           {/* メインエリア: 会話ログ + カメラ（右横） */}
           <div className="flex gap-4">
             {/* 会話ログ（メイン） */}
-            <div className="flex-1 bg-white rounded-lg shadow-sm border p-4">
+            <div className="flex-1 rounded-lg shadow-sm p-4" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}20` }}>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold">会話</h2>
+                <h2 className="text-lg font-semibold" style={{ color: theme.brown }}>会話</h2>
                 {/* 状態表示 */}
                 <div className="text-sm">
                   {(conversationState === 'ai_speaking' || tts.isSpeaking || conversation.isLoading) && (
-                    <span className="text-orange-600 font-medium">
+                    <span className="font-medium" style={{ color: theme.primary }}>
                       {conversation.isLoading ? '🤔 考え中...' : '🔊 AIが話しています...'}
                     </span>
                   )}
                   {conversationState === 'user_speaking' && !tts.isSpeaking && !conversation.isLoading && (
-                    <span className="text-blue-600 font-medium">
+                    <span className="font-medium" style={{ color: theme.secondary }}>
                       🎤 {recorder.hasSpeechStarted ? '自動送信待ち...' : 'お話しください'}
                     </span>
                   )}
                   {conversationState === 'processing' && !conversation.isLoading && (
-                    <span className="text-gray-600 font-medium">⏳ 文字起こし中...</span>
+                    <span className="font-medium" style={{ color: theme.brown }}>⏳ 文字起こし中...</span>
                   )}
                 </div>
               </div>
@@ -288,7 +298,7 @@ export default function AnalysisPage() {
 
             {/* カメラ（右横） */}
             <div className="flex-shrink-0 w-48 md:w-56">
-              <div className="rounded-lg overflow-hidden shadow-lg border-2 border-gray-200 relative">
+              <div className="rounded-lg overflow-hidden shadow-lg relative" style={{ border: `2px solid ${theme.secondary}60` }}>
                 <WebcamCapture
                   onFrame={handleFrame}
                   isAnalyzing={isAnalyzing}
@@ -296,7 +306,7 @@ export default function AnalysisPage() {
                 {/* 録音インジケーター */}
                 {conversationState === 'user_speaking' && recorder.isRecording && (
                   <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/50 px-2 py-1 rounded text-white text-xs">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: theme.primary }} />
                     REC
                   </div>
                 )}
@@ -310,7 +320,8 @@ export default function AnalysisPage() {
               <button
                 onClick={handleStartConversation}
                 disabled={isProcessing}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ backgroundColor: theme.secondary }}
               >
                 会話を開始
               </button>
@@ -319,14 +330,16 @@ export default function AnalysisPage() {
                 {conversationState === 'user_speaking' && (
                   <button
                     onClick={handleSendMessage}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                    className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: theme.secondary }}
                   >
                     発言を送信
                   </button>
                 )}
                 <button
                   onClick={handleEndConversation}
-                  className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700"
+                  className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: theme.brown }}
                 >
                   会話を終了
                 </button>
@@ -337,7 +350,8 @@ export default function AnalysisPage() {
               <button
                 onClick={handleAnalyze}
                 disabled={isProcessing}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+                className="text-white px-6 py-2 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ backgroundColor: theme.primary }}
               >
                 {isProcessing ? '分析中...' : '結果を見る'}
               </button>

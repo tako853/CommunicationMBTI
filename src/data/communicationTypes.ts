@@ -10,6 +10,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['自己表現が豊かで説得力がある', '相手の感情を察知し、共感した反応ができる', '周囲の雰囲気を一気に盛り上げられる'],
     cautions: ['時に話しすぎてしまい、他者の発言の機会を奪うことがある', '高いエネルギーゆえに、落ち着いた場では浮いてしまう場合も'],
     imagePath: '/types/acfp.jpg',
+    color: '#e53935', // 元気な赤
   },
   ACFT: {
     type: 'ACFT',
@@ -18,6 +19,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['感情表現が豊かで、反応がとにかくわかりやすい', '言葉で伝えられた気持ちを全力で拾い、共感できる', '嘘や裏がなく、安心感のあるコミュニケーション'],
     cautions: ['察することが前提の関係では、すれ違いが起きやすい', '感情表現が大きいため、落ち着いた場では浮くこともある'],
     imagePath: '/types/acft.jpg',
+    color: '#fdd835', // 元気な黄色
   },
   ACSP: {
     type: 'ACSP',
@@ -26,6 +28,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['相手の違和感や空気の変化にいち早く気づける', '的確な発言で会話や場の流れを自然に修正できる', '深い話に入りやすく、信頼関係を築きやすい'],
     cautions: ['周囲を優先しすぎて、自分の本音を後回しにしがち', '場を整える役に回りすぎると、負担を抱え込みやすい'],
     imagePath: '/types/acsp.jpg',
+    color: '#81c784', // 優しい緑
   },
   ACST: {
     type: 'ACST',
@@ -34,6 +37,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['言語化された感情や状況を冷静に整理できる', '控えめながら、要点を押さえた発言ができる', '落ち着いた議論や話し合いの場に強い'],
     cautions: ['非言語的なサインを前提にされると、理解が追いつきにくい', '遠慮しすぎると、実力や意見が見過ごされやすい'],
     imagePath: '/types/acst.jpg',
+    color: '#42a5f5', // クールな青
   },
 
   // Assert + Distill + Faceful + Perceptive
@@ -44,6 +48,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['要点を瞬時に捉え、筋道立てて説明できる', '感情のズレを論理的に整理し、衝突を収められる', '表情や話し方がわかりやすく、説得力が高い'],
     cautions: ['主張の強さが、圧や支配的に受け取られることがある', '感情的な共感だけを求められる場では、冷たく見えることもある'],
     imagePath: '/types/adfp.jpg',
+    color: '#c62828', // 赤
   },
   ADFT: {
     type: 'ADFT',
@@ -52,6 +57,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['情報整理力が高く、説明がとにかくわかりやすい', '相手の反応に応じて、必要な情報を的確に提供できる', '教育・指導・プレゼンの場で安定した力を発揮する'],
     cautions: ['明示されない感情や意図には気づきにくい', '共感を求められる場では、少し距離がある印象を持たれることも'],
     imagePath: '/types/adft.jpg',
+    color: '#7b1fa2', // 紫
   },
   ADSP: {
     type: 'ADSP',
@@ -60,6 +66,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['発言は端的で場の空気をよく汲み取る', '情報整理力と空気を読む力が高い', '場の雰囲気を読み、情報提供でフォローできる'],
     cautions: ['静かに主導権を握るため、周囲に気づかれにくい'],
     imagePath: '/types/adsp.jpg',
+    color: '#4caf50', // 緑
   },
   ADST: {
     type: 'ADST',
@@ -68,6 +75,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['感情に左右されずブレない', '必要な時だけ行動し、最小限の表現で済ませる', '言われたことを確実に処理できる'],
     cautions: ['感情を基本スルーするため誤解されやすい'],
     imagePath: '/types/adst.jpg',
+    color: '#1a4d5c', // 緑がかった紺
   },
 
   // Reserved + Connect + Faceful + Perceptive
@@ -78,6 +86,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['感情察知力が高く、相手の心の動きに気づきやすい', '聞き役としての安心感があり、信頼を得やすい', '表情や声で自然に共感を伝えられる'],
     cautions: ['自分の意見や本音を後回しにしがち', '主張を求められる場では、存在感が薄く見えることがある'],
     imagePath: '/types/rcfp.jpg',
+    color: '#ce93d8', // ピンク紫
   },
   RCFT: {
     type: 'RCFT',
@@ -86,6 +95,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['相手の話を否定せず、安心して受け止められる', '共感のリアクションが安定している', '感情的になりやすい場面を穏やかにする'],
     cautions: ['自分の意見や本音を後回しにしがち', '主体性がないと思われることがある'],
     imagePath: '/types/rcft.jpg',
+    color: '#66bb6a', // 緑
   },
   RCSP: {
     type: 'RCSP',
@@ -94,6 +104,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['空気・感情・関係性を静かに把握できる', '発言の重みが強く、信頼されやすい', '無理に介入せず、必要な時だけ的確に支える'],
     cautions: ['何も考えていない、距離があると誤解されやすい', '本人の理解度が周囲に伝わりにくい'],
     imagePath: '/types/rcsp.jpg',
+    color: '#1a237e', // 紺
   },
   RCST: {
     type: 'RCST',
@@ -102,6 +113,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['感情の受け取りが正確でズレにくい', '慎重で誠実、信頼を積み上げるタイプ', '議論や相談で感情を落ち着いて整理できる'],
     cautions: ['相手が感情を言語化しないと距離が縮みにくい', '無関心・冷たいと誤解されることがある'],
     imagePath: '/types/rcst.jpg',
+    color: '#c9a227', // 落ち着いた黄色
   },
 
   // Reserved + Distill + Faceful + Perceptive
@@ -112,6 +124,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['状況把握が早く、全体像を見失わない', '無駄な発言がなく、発言の密度が高い', '表情や声で要点を自然に強調できる'],
     cautions: ['考えていないと誤解されやすい', '周囲から「何を考えているかわからない」と思われがち'],
     imagePath: '/types/rdfp.jpg',
+    color: '#29b6f6', // 爽やかな青
   },
   RDFT: {
     type: 'RDFT',
@@ -120,6 +133,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['感情に左右されず、論点を正確に整理できる', 'はっきりした表現で誤解を生みにくい', '議論や意思決定の場で軸を作れる'],
     cautions: ['冷たく見られたり、ドライだと誤解されやすい', '共感を求められる場では距離を感じさせることがある'],
     imagePath: '/types/rdft.jpg',
+    color: '#43a047', // 緑
   },
   RDSP: {
     type: 'RDSP',
@@ -128,6 +142,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['全体像を把握する力が高く、状況判断が的確', '無駄な発言をせず、裏から効く動きができる', '混乱した場でも冷静に最適解を見つけやすい'],
     cautions: ['存在感を消しすぎて、貢献が見えにくくなりがち', '表での評価や感謝が少なく、孤立感を抱くことがある'],
     imagePath: '/types/rdsp.jpg',
+    color: '#283593', // 紺
   },
   RDST: {
     type: 'RDST',
@@ -136,6 +151,7 @@ export const COMMUNICATION_TYPES: Record<CommunicationType, CommunicationTypeInf
     strengths: ['情報処理が早く、無駄が一切ない', '感情に左右されず、常に一定の判断ができる', '省エネで継続力が高い'],
     cautions: ['感情的な配慮を求められると、誤解されやすい', '意図や善意が伝わらず、距離を感じさせることがある'],
     imagePath: '/types/rdst.jpg',
+    color: '#6d4c41', // 茶色
   },
 };
 

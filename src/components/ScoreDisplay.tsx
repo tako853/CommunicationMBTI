@@ -13,6 +13,16 @@ import type {
 } from '../types/analysis';
 import { getDominantExpression } from '../services/faceApiService';
 
+// テーマカラー
+const theme = {
+  primary: '#e24f29',      // オレンジレッド（アクセント）
+  secondary: '#63a4a6',    // ティールグリーン（サブカラー）
+  brown: '#7d6456',        // ブラウン（テキスト）
+  primaryLight: '#fef2ef', // プライマリの薄い背景
+  secondaryLight: '#f0f7f7', // セカンダリの薄い背景
+  brownLight: '#f7f5f4',   // ブラウンの薄い背景
+};
+
 interface ScoreDisplayProps {
   scores: CommunicationScores;
   currentExpressions: ExpressionData | null;
@@ -34,12 +44,12 @@ const emotionLabels: Record<string, string> = {
   surprised: '驚き',
 };
 
-function MiniScoreBar({ value, color }: { value: number; color: string }) {
+function MiniScoreBar({ value }: { value: number }) {
   return (
-    <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden flex-1">
+    <div className="h-1.5 rounded-full overflow-hidden flex-1" style={{ backgroundColor: `${theme.brown}20` }}>
       <div
         className="h-full rounded-full transition-all duration-300"
-        style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}
+        style={{ width: `${Math.min(value, 100)}%`, backgroundColor: theme.secondary }}
       />
     </div>
   );
@@ -71,31 +81,32 @@ export function ScoreDisplay({
     : null;
 
   const scoreItems = [
-    { label: '表情', value: scores.expressiveness, color: '#f59e0b' },
-    { label: 'ジェスチャー', value: scores.gestureActivity, color: '#10b981' },
-    { label: '姿勢', value: scores.posturalOpenness, color: '#3b82f6' },
-    { label: '視線', value: scores.eyeContact, color: '#8b5cf6' },
-    { label: '頷き', value: scores.nodding, color: '#ec4899' },
+    { label: '表情', value: scores.expressiveness },
+    { label: 'ジェスチャー', value: scores.gestureActivity },
+    { label: '姿勢', value: scores.posturalOpenness },
+    { label: '視線', value: scores.eyeContact },
+    { label: '頷き', value: scores.nodding },
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}20` }}>
       {/* コンパクトヘッダー（常に表示） */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between transition-colors"
+        style={{ backgroundColor: isExpanded ? theme.secondaryLight : 'white' }}
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700">リアルタイムスコア</span>
+          <span className="text-sm font-medium" style={{ color: theme.brown }}>リアルタイムスコア</span>
           {/* ミニスコアバー表示 */}
           <div className="hidden sm:flex items-center gap-2">
             {scoreItems.map((item) => (
               <div key={item.label} className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-400 w-12">{item.label}</span>
+                <span className="text-xs w-12" style={{ color: `${theme.brown}80` }}>{item.label}</span>
                 <div className="w-16">
-                  <MiniScoreBar value={item.value} color={item.color} />
+                  <MiniScoreBar value={item.value} />
                 </div>
-                <span className="text-xs font-medium w-8" style={{ color: item.color }}>
+                <span className="text-xs font-medium w-8" style={{ color: theme.secondary }}>
                   {item.value}
                 </span>
               </div>
@@ -103,7 +114,8 @@ export function ScoreDisplay({
           </div>
         </div>
         <svg
-          className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+          style={{ color: theme.brown }}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -114,22 +126,22 @@ export function ScoreDisplay({
 
       {/* 展開時の詳細表示 */}
       {isExpanded && (
-        <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50">
+        <div className="p-4 space-y-4" style={{ backgroundColor: theme.secondaryLight, borderTop: `1px solid ${theme.secondary}30` }}>
           {/* スコアバー（大きく表示） */}
           <div className="grid grid-cols-5 gap-3">
             {scoreItems.map((item) => (
               <div key={item.label} className="text-center">
                 <div
                   className="text-2xl font-bold mb-1"
-                  style={{ color: item.color }}
+                  style={{ color: theme.secondary }}
                 >
                   {item.value}
                 </div>
-                <div className="text-xs text-gray-500 mb-2">{item.label}</div>
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="text-xs mb-2" style={{ color: theme.brown }}>{item.label}</div>
+                <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: `${theme.brown}20` }}>
                   <div
                     className="h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.min(item.value, 100)}%`, backgroundColor: item.color }}
+                    style={{ width: `${Math.min(item.value, 100)}%`, backgroundColor: theme.secondary }}
                   />
                 </div>
               </div>
@@ -138,7 +150,7 @@ export function ScoreDisplay({
 
           {/* 詳細データ（折りたたみ可能なセクション） */}
           <details className="group">
-            <summary className="text-sm font-medium text-gray-600 cursor-pointer hover:text-gray-800 flex items-center gap-2">
+            <summary className="text-sm font-medium cursor-pointer flex items-center gap-2" style={{ color: theme.brown }}>
               <svg className="w-4 h-4 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -147,21 +159,22 @@ export function ScoreDisplay({
 
             <div className="mt-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* 表情 */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-amber-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.primary }} />
                   表情
                 </h4>
                 {currentExpressions ? (
                   <div className="space-y-1">
-                    <div className="text-sm font-medium text-gray-800">
+                    <div className="text-sm font-medium" style={{ color: theme.brown }}>
                       {emotionLabels[dominantEmotion!]}
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(currentExpressions).map(([key, value]) => (
                         <span
                           key={key}
-                          className="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-600"
+                          className="text-xs px-1.5 py-0.5 rounded"
+                          style={{ backgroundColor: theme.brownLight, color: theme.brown }}
                         >
                           {emotionLabels[key]}: {(value * 100).toFixed(0)}%
                         </span>
@@ -169,111 +182,111 @@ export function ScoreDisplay({
                     </div>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
 
               {/* 顔の向き */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.secondary }} />
                   顔の向き
                 </h4>
                 {currentHeadPose ? (
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    <span className="text-gray-500">上下:</span>
+                  <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: theme.brown }}>
+                    <span style={{ color: `${theme.brown}80` }}>上下:</span>
                     <span className="text-right">{currentHeadPose.pitch.toFixed(2)}</span>
-                    <span className="text-gray-500">左右:</span>
+                    <span style={{ color: `${theme.brown}80` }}>左右:</span>
                     <span className="text-right">{currentHeadPose.yaw.toFixed(2)}</span>
-                    <span className="text-gray-500">傾き:</span>
+                    <span style={{ color: `${theme.brown}80` }}>傾き:</span>
                     <span className="text-right">{currentHeadPose.roll.toFixed(2)}</span>
-                    <span className="text-gray-500">頷き:</span>
-                    <span className={`text-right font-medium ${currentHeadPose.isNodding ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span style={{ color: `${theme.brown}80` }}>頷き:</span>
+                    <span className="text-right font-medium" style={{ color: currentHeadPose.isNodding ? theme.secondary : `${theme.brown}60` }}>
                       {currentHeadPose.isNodding ? 'Yes' : 'No'}
                     </span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
 
               {/* 視線 */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-purple-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.secondary }} />
                   視線
                 </h4>
                 {currentGaze ? (
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    <span className="text-gray-500">カメラ注視:</span>
-                    <span className={`text-right font-medium ${currentGaze.lookingAtCamera ? 'text-green-600' : 'text-gray-400'}`}>
+                  <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: theme.brown }}>
+                    <span style={{ color: `${theme.brown}80` }}>カメラ注視:</span>
+                    <span className="text-right font-medium" style={{ color: currentGaze.lookingAtCamera ? theme.secondary : `${theme.brown}60` }}>
                       {currentGaze.lookingAtCamera ? 'Yes' : 'No'}
                     </span>
-                    <span className="text-gray-500">目の開き(左):</span>
+                    <span style={{ color: `${theme.brown}80` }}>目の開き(左):</span>
                     <span className="text-right">{(currentGaze.eyeOpenness.left * 100).toFixed(0)}%</span>
-                    <span className="text-gray-500">目の開き(右):</span>
+                    <span style={{ color: `${theme.brown}80` }}>目の開き(右):</span>
                     <span className="text-right">{(currentGaze.eyeOpenness.right * 100).toFixed(0)}%</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
 
               {/* 手の形状 */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-green-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.secondary }} />
                   手の形状
                 </h4>
                 {currentHandShape && (currentHandShape.left || currentHandShape.right) ? (
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    <span className="text-gray-500">左手:</span>
+                  <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: theme.brown }}>
+                    <span style={{ color: `${theme.brown}80` }}>左手:</span>
                     <span className="text-right">{getHandShapeLabel(currentHandShape.left)}</span>
-                    <span className="text-gray-500">右手:</span>
+                    <span style={{ color: `${theme.brown}80` }}>右手:</span>
                     <span className="text-right">{getHandShapeLabel(currentHandShape.right)}</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
 
               {/* 姿勢 */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-cyan-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.secondary }} />
                   姿勢
                 </h4>
                 {currentPose ? (
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    <span className="text-gray-500">肩の開き:</span>
+                  <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: theme.brown }}>
+                    <span style={{ color: `${theme.brown}80` }}>肩の開き:</span>
                     <span className="text-right">{(currentPose.shoulderOpenness * 100).toFixed(0)}%</span>
-                    <span className="text-gray-500">前傾/後傾:</span>
+                    <span style={{ color: `${theme.brown}80` }}>前傾/後傾:</span>
                     <span className="text-right">{currentPose.leanAngle.toFixed(2)}</span>
-                    <span className="text-gray-500">安定性:</span>
+                    <span style={{ color: `${theme.brown}80` }}>安定性:</span>
                     <span className="text-right">{(currentPose.stability * 100).toFixed(0)}%</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
 
               {/* ジェスチャー */}
-              <div className="bg-white rounded-lg p-3 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
-                  <span className="w-2 h-2 bg-pink-500 rounded-full" />
+              <div className="rounded-lg p-3" style={{ backgroundColor: 'white', border: `1px solid ${theme.brown}15` }}>
+                <h4 className="text-xs font-semibold mb-2 flex items-center gap-1" style={{ color: `${theme.brown}99` }}>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: theme.primary }} />
                   ジェスチャー
                 </h4>
                 {currentGesture ? (
-                  <div className="grid grid-cols-2 gap-1 text-xs">
-                    <span className="text-gray-500">左手の動き:</span>
+                  <div className="grid grid-cols-2 gap-1 text-xs" style={{ color: theme.brown }}>
+                    <span style={{ color: `${theme.brown}80` }}>左手の動き:</span>
                     <span className="text-right">{(currentGesture.leftHandMovement * 100).toFixed(0)}%</span>
-                    <span className="text-gray-500">右手の動き:</span>
+                    <span style={{ color: `${theme.brown}80` }}>右手の動き:</span>
                     <span className="text-right">{(currentGesture.rightHandMovement * 100).toFixed(0)}%</span>
-                    <span className="text-gray-500">頻度:</span>
+                    <span style={{ color: `${theme.brown}80` }}>頻度:</span>
                     <span className="text-right">{(currentGesture.gestureFrequency * 100).toFixed(0)}%</span>
                   </div>
                 ) : (
-                  <span className="text-xs text-gray-400">検出なし</span>
+                  <span className="text-xs" style={{ color: `${theme.brown}60` }}>検出なし</span>
                 )}
               </div>
             </div>
