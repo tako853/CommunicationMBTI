@@ -83,7 +83,8 @@ export interface CommunicationScores {
   expressiveness: number; // 表現力 0-100
   gestureActivity: number; // ジェスチャー活性度 0-100
   posturalOpenness: number; // 姿勢開放性 0-100
-  eyeContactStability?: number; // 視線安定性 0-100 (optional)
+  eyeContact: number; // アイコンタクト 0-100
+  nodding: number; // 頷き 0-100
 }
 
 // サマリー

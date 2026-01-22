@@ -26,6 +26,8 @@ export default function AnalysisPage() {
     expressiveness: 0,
     gestureActivity: 0,
     posturalOpenness: 0,
+    eyeContact: 0,
+    nodding: 0,
   });
 
   const timelineRef = useRef<TimelineEntry[]>([]);
@@ -172,9 +174,14 @@ export default function AnalysisPage() {
 
     try {
       // 軸3（非言語を伝える力）は映像から計算
+      // 5項目の加重平均: 表情(25%) + ジェスチャー(25%) + 姿勢(20%) + アイコンタクト(20%) + 頷き(10%)
       const finalScores = calculateAllScores(timelineRef.current);
       const nonverbalExpression = Math.round(
-        (finalScores.expressiveness + finalScores.gestureActivity + finalScores.posturalOpenness) / 3
+        finalScores.expressiveness * 0.25 +
+        finalScores.gestureActivity * 0.25 +
+        finalScores.posturalOpenness * 0.20 +
+        finalScores.eyeContact * 0.20 +
+        finalScores.nodding * 0.10
       );
 
       // 軸1, 2, 4は音声テキストからGPTで分析

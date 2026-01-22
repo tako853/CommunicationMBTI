@@ -79,6 +79,65 @@ export function calculatePosturalOpenness(
   return Math.min(100, avgOpenness * 50 + avgStability * 30 + leanBonus);
 }
 
+// アイコンタクトスコアを計算
+export function calculateEyeContact(
+  timeline: TimelineEntry[]
+): number {
+  const gazeEntries = timeline.filter((e) => e.gaze !== null);
+  if (gazeEntries.length === 0) return 50; // デフォルト値
+
+  // カメラを見ている割合
+  const lookingAtCameraCount = gazeEntries.filter(
+    (e) => e.gaze!.lookingAtCamera
+  ).length;
+  const lookingRatio = lookingAtCameraCount / gazeEntries.length;
+
+  // 目の開き具合（平均）- 開いている方がアクティブな印象
+  const avgEyeOpenness =
+    gazeEntries.reduce(
+      (sum, e) => sum + (e.gaze!.eyeOpenness.left + e.gaze!.eyeOpenness.right) / 2,
+      0
+    ) / gazeEntries.length;
+
+  // カメラを見ている割合(70%) + 目の開き具合(30%)
+  return Math.min(100, lookingRatio * 70 + avgEyeOpenness * 30);
+}
+
+// 頷きスコアを計算
+export function calculateNodding(
+  timeline: TimelineEntry[]
+): number {
+  const headPoseEntries = timeline.filter((e) => e.headPose !== null);
+  if (headPoseEntries.length === 0) return 50; // デフォルト値
+
+  // 頷き検出回数
+  const noddingCount = headPoseEntries.filter(
+    (e) => e.headPose!.isNodding
+  ).length;
+
+  // 頷き率（全フレームに対する割合）
+  const noddingRatio = noddingCount / headPoseEntries.length;
+
+  // 頭の動きの多様性（pitch, yaw, rollの変化量）
+  let totalHeadMovement = 0;
+  for (let i = 1; i < headPoseEntries.length; i++) {
+    const prev = headPoseEntries[i - 1].headPose!;
+    const curr = headPoseEntries[i].headPose!;
+    totalHeadMovement +=
+      Math.abs(curr.pitch - prev.pitch) +
+      Math.abs(curr.yaw - prev.yaw) * 0.5 + // 首振りは控えめに評価
+      Math.abs(curr.roll - prev.roll) * 0.3; // 傾きは更に控えめ
+  }
+  const avgHeadMovement = totalHeadMovement / headPoseEntries.length;
+
+  // 頷き率(60%) + 頭の動き(40%)
+  // 頷き率は0.1（10%）で十分高いとみなす
+  const noddingScore = Math.min(1, noddingRatio * 10) * 60;
+  const movementScore = Math.min(1, avgHeadMovement * 5) * 40;
+
+  return Math.min(100, noddingScore + movementScore);
+}
+
 // 全スコアを計算
 export function calculateAllScores(
   timeline: TimelineEntry[]
@@ -87,6 +146,8 @@ export function calculateAllScores(
     expressiveness: Math.round(calculateExpressiveness(timeline)),
     gestureActivity: Math.round(calculateGestureActivity(timeline)),
     posturalOpenness: Math.round(calculatePosturalOpenness(timeline)),
+    eyeContact: Math.round(calculateEyeContact(timeline)),
+    nodding: Math.round(calculateNodding(timeline)),
   };
 }
 
