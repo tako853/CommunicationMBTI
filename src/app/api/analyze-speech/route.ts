@@ -70,9 +70,9 @@ const SYSTEM_PROMPT = `あなたは会話分析の専門家です。与えられ
   "listening": 数値,
   "nonverbalReading": 数値,
   "reasons": {
-    "assertiveness": "理由（20文字程度で簡潔に）",
-    "listening": "理由（20文字程度で簡潔に）",
-    "nonverbalReading": "理由（20文字程度で簡潔に）"
+    "assertiveness": "理由（2,3文程度）",
+    "listening": "理由（2,3文程度）",
+    "nonverbalReading": "理由（2,3文程度）"
   }
 }`;
 
